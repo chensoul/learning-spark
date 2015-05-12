@@ -1,4 +1,4 @@
-package com.javachen.spark.rdd
+package com.javachen.spark.examples.rdd
 
 import org.apache.spark.SparkContext
 

@@ -1,8 +1,8 @@
-package com.javachen.spark.rdd
+package com.javachen.spark.examples.rdd
 
-import org.apache.spark.{RangePartitioner,HashPartitioner, SparkContext}
+import org.apache.spark.SparkContext
 
-object PartitionBy {
+object MapValues {
   def main(args: Array[String]) {
 
     val sc = new SparkContext("local", "ReduceByKeyToDriver Test")
@@ -13,8 +13,8 @@ object PartitionBy {
     val pairs = sc.parallelize(data1, 3)
     //val result = pairs.reduce((A, B) => (A._1 + "#" + B._1, A._2 + B._2))
     //val result = pairs.fold(("K0",10))((A, B) => (A._1 + "#" + B._1, A._2 + B._2))
-    var result = pairs.partitionBy(new RangePartitioner(2, pairs, true))
-    result = pairs.partitionBy(new HashPartitioner(2))
+    //val result = pairs.partitionBy(new RangePartitioner(2, pairs, true))
+    val result = pairs.mapValues(V => 10 * V)
     result.foreach(println)
   }
 }

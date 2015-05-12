@@ -257,6 +257,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <!-- scala -->
         <dependency>
             <groupId>org.scalanlp</groupId>
@@ -307,6 +308,13 @@
             <version>1.6</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.scopt</groupId>
+            <artifactId>scopt_${scala.minor.version}</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>

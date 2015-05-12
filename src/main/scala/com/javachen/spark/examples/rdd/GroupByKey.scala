@@ -1,4 +1,5 @@
-package com.javachen.spark.rdd
+package com.javachen.spark.examples.rdd
+
 import java.util.Random
 
 import org.apache.spark.{SparkConf, SparkContext}

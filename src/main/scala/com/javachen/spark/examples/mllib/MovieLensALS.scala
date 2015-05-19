@@ -171,7 +171,7 @@ object MovieLensALS {
     val start = System.currentTimeMillis()
     val model = new ALS().setRank(params.rank).setIterations(params.numIterations).setLambda(params.lambda).setImplicitPrefs(params.implicitPrefs).setUserBlocks(params.numUserBlocks).setProductBlocks(params.numProductBlocks).run(training)
     println("Train Time = " + (System.currentTimeMillis() - start) * 1.0 / 1000)
-    val testRmse = computeRmse(model, training, params.implicitPrefs)
+    val testRmse = computeRmse(model, training)
 
     println("RMSE = " + testRmse)
 
@@ -179,15 +179,22 @@ object MovieLensALS {
   }
 
   /** Compute RMSE (Root Mean Squared Error). */
-  def computeRmse(model: MatrixFactorizationModel, data: RDD[Rating], implicitPrefs: Boolean) = {
+   def computeRmse(model: MatrixFactorizationModel, data: RDD[Rating]) = {
+    val usersProducts = data.map { case Rating(user, product, rate) =>
+      (user, product)
+    }
 
-    def mapPredictedRating(r: Double) = if (implicitPrefs) math.max(math.min(r, 1.0), 0.0) else r
+    val predictions = model.predict(usersProducts).map { case Rating(user, product, rate) =>
+      ((user, product), rate)
+    }
 
-    val predictions: RDD[Rating] = model.predict(data.map(x => (x.user, x.product)))
+    val ratesAndPreds = data.map { case Rating(user, product, rate) =>
+      ((user, product), rate)
+    }.join(predictions).sortByKey()
 
-    val predictionsAndRatings = predictions.map { x =>
-      ((x.user, x.product), mapPredictedRating(x.rating))
-    }.join(data.map(x => ((x.user, x.product), x.rating))).values
-    math.sqrt(predictionsAndRatings.map(x => (x._1 - x._2) * (x._1 - x._2)).mean())
+    math.sqrt(ratesAndPreds.map { case ((user, product), (r1, r2)) =>
+      val err = (r1 - r2)
+      err * err
+    }.mean())
   }
 }

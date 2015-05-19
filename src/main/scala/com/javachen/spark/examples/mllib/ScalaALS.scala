@@ -15,9 +15,14 @@ object ScalaALS {
     })
 
     //使用ALS训练数据建立推荐模型
-    val rank = 10
+
+    val rank = 12
+    val lambda = 0.1
     val numIterations = 20
-    val model = ALS.train(ratings, rank, numIterations, 0.01)
+    val numPartitions=4
+
+    val training = ratings.values.repartition(numPartitions).cache()
+    val model = ALS.train(training, rank, numIterations, lambda)
 
     //从 ratings 中获得只包含用户和商品的数据集
     val usersProducts = ratings.map { case Rating(user, product, rate) =>
@@ -35,13 +40,12 @@ object ScalaALS {
       ((user, product), rate)
     }.join(predictions)
 
-    //然后计算均方差，注意这里没有调用 math.sqrt方法
-    val MSE = ratesAndPreds.map { case ((user, product), (r1, r2)) =>
+    //然后计算均方差
+    val MSE =math.sqrt(ratesAndPreds.map { case ((user, product), (r1, r2)) =>
       val err = (r1 - r2)
       err * err
-    }.mean()
+    }.mean())
 
-    //打印出均方差值
     println("Mean Squared Error = " + MSE)
     //Mean Squared Error = 1.37797097094789E-5
   }

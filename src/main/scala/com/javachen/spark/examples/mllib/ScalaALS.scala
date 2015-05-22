@@ -2,6 +2,7 @@ package com.javachen.spark.examples.mllib
 
 import org.apache.spark.mllib.recommendation.{ALS, Rating}
 import org.apache.spark.{SparkConf, SparkContext}
+import scala.sys.process._
 
 object ScalaALS {
   def main(args: Array[String]): Unit = {
@@ -38,16 +39,27 @@ object ScalaALS {
     //将真实评分数据集与预测评分数据集进行合并
     val ratesAndPreds = ratings.map { case Rating(user, product, rate) =>
       ((user, product), rate)
-    }.join(predictions)
+    }.join(predictions).sortByKey()
 
     //然后计算均方差
-    val MSE =math.sqrt(ratesAndPreds.map { case ((user, product), (r1, r2)) =>
+    val MSE =ratesAndPreds.map { case ((user, product), (r1, r2)) =>
       val err = (r1 - r2)
       err * err
-    }.mean())
+    }.mean()
 
     println("Mean Squared Error = " + MSE)
-    //Mean Squared Error = 1.37797097094789E-5
+
+    //确保只生成一个文件，并按用户排序
+    val formatedRatesAndPreds = ratesAndPreds.repartition(1).sortBy(_._1).map({
+      case ((user, product), (rate, pred)) => (user + "\t" + product + "\t" + rate + "\t" + pred)
+    })
+
+    "hadoop fs -rm -r /tmp/user_goods_rates".!
+    formatedRatesAndPreds.saveAsTextFile("/tmp/user_goods_rates")
+
+    //排序取10条，限制结果集为5
+    predictions.map({ case ((user, product), rate) => (user, (product, rate)) }).groupByKey().map(t=>(t._1,t._2.toList.sortBy(x=> - x._2).take(10))).take(5)
+
   }
 
 }

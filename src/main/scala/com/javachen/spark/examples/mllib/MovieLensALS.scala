@@ -165,7 +165,7 @@ object MovieLensALS {
   }
 
   def evaluateMode(params: Params, ratings: RDD[(Long, Rating)]): MatrixFactorizationModel = {
-    val training = ratings.values.repartition(4).cache()
+    val training = ratings.values.repartition(4)
 
     //建立模型
     val start = System.currentTimeMillis()

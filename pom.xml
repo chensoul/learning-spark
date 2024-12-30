@@ -19,7 +19,7 @@
         <scala.complete.version>${scala.minor.version}.4</scala.complete.version>
         <scala.macros.version>2.1.0</scala.macros.version>
 
-        <hadoop.version>2.10.2</hadoop.version>
+        <hadoop.version>3.4.1</hadoop.version>
         <hbase.version>1.7.2</hbase.version>
         <spark.version>1.6.3.2.6.5.0-292</spark.version>
 

@@ -20,7 +20,7 @@
         <scala.macros.version>2.1.0</scala.macros.version>
 
         <hadoop.version>2.10.2</hadoop.version>
-        <hbase.version>1.7.2</hbase.version>
+        <hbase.version>2.6.1-hadoop3</hbase.version>
         <spark.version>1.6.3.2.6.5.0-292</spark.version>
 
         <slf4j.version>1.7.12</slf4j.version>

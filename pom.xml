@@ -17,7 +17,7 @@
         <java.version>1.7</java.version>
         <scala.minor.version>2.10</scala.minor.version>
         <scala.complete.version>${scala.minor.version}.4</scala.complete.version>
-        <scala.macros.version>2.0.1</scala.macros.version>
+        <scala.macros.version>2.1.0</scala.macros.version>
 
         <hadoop.version>2.10.2</hadoop.version>
         <hbase.version>1.0.0-cdh5.4.0</hbase.version>
